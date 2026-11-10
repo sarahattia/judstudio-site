@@ -52,6 +52,7 @@ p{margin:0}
 
 /* grain */
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:#1a2b1d url(img/tx-green.webp) center/cover no-repeat}
+@media (max-aspect-ratio:1/1){body::before,.ov,.loader{background-image:url(img/tx-green-m.webp)!important}}
 body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;opacity:.09;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation:grain 1s steps(4) infinite}
@@ -151,15 +152,19 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .pcard__tag{color:var(--brass);font-weight:700;letter-spacing:.08em}
 .hend{width:clamp(260px,26vw,380px);flex:none;align-self:center;display:flex;flex-direction:column;gap:18px}
 .hend h3{font-size:calc((var(--step-2)) * var(--lk,1))}
+.swipe-hint{display:none;padding:0 var(--gut) 10px;color:var(--taupe);font-size:1rem;letter-spacing:.08em}
 .hprogress{position:absolute;bottom:34px;inset-inline:var(--gut);height:1px;background:var(--line);overflow:hidden}
 .hprogress i{position:absolute;inset:0;background:var(--brass);transform:scaleX(0);transform-origin:right}
 @media (max-width:900px){
-  .htrack{width:auto;flex-direction:column;gap:56px}
-  .pcard{width:100%}
+  .hscroll{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+  .hscroll::-webkit-scrollbar{display:none}
+  .htrack{width:max-content;flex-direction:row;gap:16px;padding-bottom:28px}
+  .pcard{width:78vw;max-width:360px;scroll-snap-align:center}
   .pcard:nth-child(even){margin-top:0}
-  .pcard__img{aspect-ratio:4/4.4}
-  .hend{width:100%}
-  .hprogress{display:none}
+  .pcard__img{aspect-ratio:3/3.7}
+  .hend{width:70vw;max-width:320px;scroll-snap-align:center}
+  .hprogress{display:block;position:relative;bottom:auto;inset-inline:auto;margin:0 var(--gut) 40px}
+  .swipe-hint{display:block}
 }
 
 /* process (light chapter) */
@@ -638,6 +643,7 @@ html[dir=ltr]{--lk:.7}
       <div style="display:grid;gap:12px"><h2 class="split"><span class="ln"><span>פרויקטים</span></span></h2></div>
       <p>פרויקטים לדוג׳ מהסטודיו במגזר הפרטי והמסחרי.</p>
     </div>
+    <p class="swipe-hint" aria-hidden="true">החליקו לצפייה בכל הפרויקטים ⟷</p>
     <div class="hscroll" id="hscroll">
       <div class="htrack" id="htrack"></div>
     </div>
@@ -1024,6 +1030,7 @@ function openOv(i,x,y){
   setTimeout(()=>document.getElementById('ovClose').focus(),50);
 }
 function closeOv(){ov.classList.remove('is-open');setInert(false);lenis&&lenis.start();document.body.style.overflow='';lastFocus&&lastFocus.focus()}
+(function(){const hs=document.getElementById('hscroll'),bar=document.getElementById('hprog');const upd=()=>{if(innerWidth>900)return;const m=hs.scrollWidth-hs.clientWidth;bar.style.transform='scaleX('+(m>0?Math.abs(hs.scrollLeft)/m:0)+')'};hs.addEventListener('scroll',upd,{passive:true});upd()})();
 track.addEventListener('click',e=>{const c=e.target.closest('.pcard');if(c)openOv(+c.dataset.p,e.clientX||undefined,e.clientY||undefined)});
 document.getElementById('ovClose').addEventListener('click',closeOv);
 document.getElementById('ovNext').addEventListener('click',()=>{ov.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>fillOv((cur_p+1)%PROJECTS.length),reduced?0:300)});
@@ -1107,7 +1114,7 @@ mm.add('(min-width: 901px)',()=>{
     onUpdate:s=>gsap.set('#hprog',{scaleX:s.progress})}});
   const onFocus=e=>{const c=e.target.closest('.pcard,.hend');if(!c)return;const st=tw.scrollTrigger,tr=track.getBoundingClientRect(),cr=c.getBoundingClientRect();
     const fromRight=RTL?tr.right-cr.right:cr.left-tr.left;const x=gsap.utils.clamp(0,dist(),fromRight-(innerWidth-cr.width)/2);const y=st.start+x;lenis?lenis.scrollTo(y,{immediate:true}):scrollTo(0,y)};
-  const hs=document.getElementById('hscroll');const noNative=()=>{if(hs.scrollLeft!==0)hs.scrollLeft=0};hs.addEventListener('scroll',noNative);
+  const hs=document.getElementById('hscroll');const noNative=()=>{if(innerWidth>900&&hs.scrollLeft!==0)hs.scrollLeft=0};hs.addEventListener('scroll',noNative);
   track.addEventListener('focusin',e=>{noNative();onFocus(e);requestAnimationFrame(noNative)});
   gsap.utils.toArray('.pcard .par').forEach(img=>{
     gsap.fromTo(img,{xPercent:RTL?8:-8},{xPercent:RTL?-8:8,ease:'none',scrollTrigger:{trigger:img.closest('.pcard'),containerAnimation:tw,start:'left right',end:'right left',scrub:true}});
@@ -1115,7 +1122,7 @@ mm.add('(min-width: 901px)',()=>{
   return()=>{};
 });
 mm.add('(max-width: 900px)',()=>{
-  gsap.utils.toArray('.pcard').forEach(c=>gsap.from(c,{y:80,opacity:0,duration:1.2,ease:'expo.out',scrollTrigger:{trigger:c,start:'top 92%'}}));
+  gsap.from('.pcard',{x:RTL?-60:60,opacity:0,duration:1.1,stagger:.08,ease:'expo.out',scrollTrigger:{trigger:'#htrack',start:'top 85%'}});
 });
 // headings
 gsap.utils.toArray('.split').forEach(h=>{
