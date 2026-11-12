@@ -156,15 +156,15 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .hprogress{position:absolute;bottom:34px;inset-inline:var(--gut);height:1px;background:var(--line);overflow:hidden}
 .hprogress i{position:absolute;inset:0;background:var(--brass);transform:scaleX(0);transform-origin:right}
 @media (max-width:900px){
-  .hscroll{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
-  .hscroll::-webkit-scrollbar{display:none}
-  .htrack{width:max-content;flex-direction:row;gap:16px;padding-bottom:28px}
-  .pcard{width:78vw;max-width:360px;scroll-snap-align:center}
-  .pcard:nth-child(even){margin-top:0}
-  .pcard__img{aspect-ratio:3/3.7}
-  .hend{width:70vw;max-width:320px;scroll-snap-align:center}
-  .hprogress{display:block;position:relative;bottom:auto;inset-inline:auto;margin:0 var(--gut) 40px}
-  .swipe-hint{display:block}
+  .projects{min-height:100svh;display:flex;flex-direction:column}
+  .projects__head{padding-top:calc(78px + env(safe-area-inset-top,0px));padding-bottom:14px}
+  .hscroll{flex:1;display:flex;align-items:flex-start;overflow:hidden}
+  .htrack{width:max-content;flex-direction:row;gap:18px;padding-top:0;padding-bottom:0}
+  .pcard{width:min(74vw,calc((100svh - var(--ph,260px) - 150px) * .75));max-width:360px;gap:8px}
+  .pcard:nth-child(even){margin-top:24px}
+  .pcard__img{aspect-ratio:3/4}
+  .hend{width:66vw;max-width:320px}
+  .hprogress{display:block;bottom:18px}
 }
 
 /* process (light chapter) */
@@ -188,10 +188,11 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .pmedia > .on{opacity:1;transform:none}
 .pmedia img.contain{object-fit:contain;background:#f5f3ef;padding:8%}
 @media (max-width:900px){
-  .process__grid{grid-template-columns:1fr}
-  .pmedia{display:none}
-  .step{min-height:auto;opacity:1}
-  .step__media{display:block;aspect-ratio:4/3.4;border-radius:999px 999px 0 0;overflow:hidden;margin-top:10px;border:3px solid transparent;border-bottom:0;background:var(--chrome) border-box}
+  .process__grid{display:flex;flex-direction:column;gap:0}
+  .pcol{order:-1;position:sticky;top:calc(70px + env(safe-area-inset-top,0px));z-index:2;height:calc(42svh + 24px);margin-inline:calc(-1 * var(--gut));padding:12px var(--gut);background:#e9ddcf url(img/tx-cream.webp) center/cover;box-shadow:0 14px 20px -14px rgba(60,40,20,.35)}
+  .pcol .pmedia{position:relative;inset:auto;top:0;height:100%;width:min(100%,calc(42svh * 1.05));margin-inline:auto;border-radius:999px 999px 0 0;border:3px solid transparent;border-bottom:0;background:var(--chrome) border-box}
+  .step{min-height:52svh}
+  .step__media{display:none;aspect-ratio:4/3.4;border-radius:999px 999px 0 0;overflow:hidden;margin-top:10px;border:3px solid transparent;border-bottom:0;background:var(--chrome) border-box}
   .step__media > *{width:100%;height:100%;object-fit:cover}
   .step__media img.contain{object-fit:contain;background:#f5f3ef;padding:6%}
 }
@@ -227,8 +228,10 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .svc__row{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1.1fr);gap:clamp(14px,3vw,48px);align-items:baseline;padding-block:clamp(18px,3vh,30px);position:relative;transition:padding .5s var(--ease),color .4s}
 .svc__row::before{content:"";position:absolute;inset:0;background:rgba(216,203,183,.07);transform:scaleY(0);transform-origin:bottom;transition:transform .5s var(--ease);z-index:-1}
 .svc li{position:relative;z-index:0}
-.svc li:hover .svc__row{padding-inline-start:clamp(10px,2vw,30px)}
-.svc li:hover .svc__row::before{transform:none}
+.svc li:hover .svc__row,.svc li.is-active .svc__row{padding-inline-start:clamp(10px,2vw,30px)}
+.svc li:hover .svc__row::before,.svc li.is-active .svc__row::before{transform:none}
+.svc__thumb{transition:transform .6s var(--ease),box-shadow .6s}
+.svc li.is-active .svc__thumb{transform:scale(1.08);box-shadow:0 0 0 4px rgba(217,194,142,.25),0 10px 28px rgba(0,0,0,.4)}
 .svc__row b{font-size:calc((1.4rem) * var(--lk,1));color:var(--brass);font-variant-numeric:tabular-nums}
 .svc__row h3{font-size:calc((var(--step-2)) * var(--lk,1));color:var(--stone-hi)}
 .svc__row p{color:var(--stone);opacity:.75;max-width:40ch;font-size:calc((1.5rem) * var(--lk,1));line-height:1.25}
@@ -656,7 +659,6 @@ html[dir=ltr]{--lk:.7}
       <div style="display:grid;gap:12px"><h2 class="split"><span class="ln"><span>Projects</span></span></h2></div>
       <p>A selection of the studio’s private and commercial projects.</p>
     </div>
-    <p class="swipe-hint" aria-hidden="true">Swipe to see all projects ⟷</p>
     <div class="hscroll" id="hscroll">
       <div class="htrack" id="htrack"></div>
     </div>
@@ -1133,7 +1135,7 @@ loader.style.animation='none';
 
 // horizontal projects (desktop)
 const mm=gsap.matchMedia();
-mm.add('(min-width: 901px)',()=>{
+mm.add('all',()=>{
   const dist=()=>track.scrollWidth-innerWidth;
   const tw=gsap.to(track,{x:()=>RTL?dist():-dist(),ease:'none',scrollTrigger:{trigger:'#projects',start:'top top',end:()=>'+='+dist(),pin:true,scrub:1,invalidateOnRefresh:true,anticipatePin:1,
     onUpdate:s=>gsap.set('#hprog',{scaleX:s.progress})}});
@@ -1146,16 +1148,16 @@ mm.add('(min-width: 901px)',()=>{
   });
   return()=>{};
 });
-mm.add('(max-width: 900px)',()=>{
-  gsap.from('.pcard',{x:RTL?-60:60,opacity:0,duration:1.1,stagger:.08,ease:'expo.out',scrollTrigger:{trigger:'#htrack',start:'top 85%'}});
-});
+ScrollTrigger.config({ignoreMobileResize:true});
+// services: on touch screens the row in the middle of the screen gets the hover effect
+if(!matchMedia('(pointer:fine)').matches)document.querySelectorAll('.svc li').forEach(li=>ScrollTrigger.create({trigger:li,start:'top 62%',end:'bottom 38%',toggleClass:'is-active'}));
 // headings
 gsap.utils.toArray('.split').forEach(h=>{
   gsap.from(h.querySelectorAll('.ln > span'),{yPercent:115,duration:1.3,stagger:.1,ease:'expo.out',scrollTrigger:{trigger:h,start:'top 88%'}});
 });
 // clip reveal images
-if(innerWidth>900)gsap.utils.toArray('.clip').forEach(c=>{
-  gsap.from(c,{clipPath:'inset(100% 0 0 0 round 999px 999px 0 0)',duration:1.5,ease:'expo.inOut',scrollTrigger:{trigger:c,start:'top 90%'}});
+const mob=innerWidth<=900;gsap.utils.toArray('.clip').forEach(c=>{
+  gsap.from(c,{clipPath:'inset(100% 0 0 0 round 999px 999px 0 0)',duration:mob?1.1:1.5,ease:'expo.inOut',scrollTrigger:{trigger:c,start:mob?'top 98%':'top 90%'}});
 });
 // hero parallax
 gsap.to('.hero__arch',{yPercent:-10,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
@@ -1172,7 +1174,7 @@ gsap.from('.cbox',{y:60,opacity:0,duration:1.1,stagger:.1,ease:'expo.out',scroll
 ScrollTrigger.create({trigger:'#cmp',start:'top 70%',once:true,onEnter:()=>{const o={v:85};introTw=gsap.to(o,{v:50,duration:1.6,ease:'expo.inOut',onUpdate:()=>setP(o.v)})}});
 // process steps
 let curStep=0;const stepEls=[...document.querySelectorAll('.step')];
-ScrollTrigger.create({trigger:'#steps',start:'top bottom',end:'bottom top',onUpdate:()=>{const mid=innerHeight*.55;let k=0;stepEls.forEach((el,i)=>{if(el.getBoundingClientRect().top<mid)k=i});if(k!==curStep){curStep=k;setStep(k)}}});
+ScrollTrigger.create({trigger:'#steps',start:'top bottom',end:'bottom top',onUpdate:()=>{const mid=innerHeight*(innerWidth<=900?.72:.55);let k=0;stepEls.forEach((el,i)=>{if(el.getBoundingClientRect().top<mid)k=i});if(k!==curStep){curStep=k;setStep(k)}}});
 document.querySelectorAll('.step__media video').forEach(v=>ScrollTrigger.create({trigger:v,start:'top 90%',end:'bottom 10%',onToggle:x=>x.isActive?v.play().catch(()=>{}):v.pause()}));
 
 addEventListener('load',()=>ScrollTrigger.refresh());
