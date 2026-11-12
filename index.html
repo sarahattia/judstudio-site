@@ -586,6 +586,8 @@ html[dir=ltr]{--lk:.7}
 [dir=ltr] .statement p.big.is-drawn{animation-name:goldsweep-ltr}
 @keyframes goldsweep-ltr{to{background-position:0% 0}}
 [dir=ltr].reduced .statement p.big,[dir=ltr].a11y-still .statement p.big{background-position:0% 0}
+.foot__br{display:none}
+@media (max-width:900px){.foot__br{display:inline}.foot__dot{display:none}.foot__id{line-height:1.5}}
 </style>
 </head>
 <body>
@@ -779,7 +781,7 @@ html[dir=ltr]{--lk:.7}
     </div>
     <footer class="foot" role="contentinfo">
       <img src="img/logo.webp" alt="לוגו JUD Studio" loading="lazy">
-      <span>JUD Studio · אדריכלות ועיצוב פנים · ג׳וד אביטבול</span>
+      <span class="foot__id">JUD Studio · אדריכלות ועיצוב פנים<span class="foot__dot"> · </span><br class="foot__br">ג׳וד אביטבול</span>
       <span class="ltr">© 2026 JUD STUDIO</span>
       <a class="toTop" href="accessibility.html">הצהרת נגישות</a>
       <a class="toTop" href="privacy.html">מדיניות פרטיות</a>
