@@ -611,6 +611,17 @@ html[dir=ltr]:not(.a11y-readable) body{font-weight:400;font-stretch:100%;letter-
 html[dir=ltr]:not(.a11y-readable) :is(.nav a,.btn,.hero__sub,.arch__cap,.menu a,.menu .btn,.langs a,.marquee__track span,.eyebrow,.cbox h3,.cbox .val,.pcard__tag,.pcard__meta span,.svc__row p,.step p,.process__head p,.projects__head p,.about__txt p,.ba__text p,.contact__lead,.tst__text,.tst__who,.ov__hero p,.ov__facts dt,.ov__facts dd,.loc,.foot,.foot a,.toTop,.swipe-hint,.chip,.cmp__tag){font-family:"Fredoka EN","Rubik",Arial,sans-serif!important;font-weight:400!important;font-stretch:100%!important;word-spacing:normal!important}
 html[dir=ltr]:not(.a11y-readable) :is(.eyebrow,.cbox h3,.ov__facts dt){font-weight:500!important}
 html[dir=ltr]:not(.a11y-readable) :is(h1,h2,h3,.statement p.big,.sig){-webkit-text-stroke:.35px currentColor}
+
+/* readability pass: calmer stone texture, darker text */
+.process{background:linear-gradient(180deg,rgba(246,242,234,.74),rgba(246,242,234,.68)),url(img/tx-cream.webp) left top / 800px auto repeat,#f1efea}
+.process .eyebrow{color:#4f3a18}
+.process__head h2,.step h3{color:#1c2a1f}
+.process__head p{color:#3a2416}
+.step p{color:#221d18}
+.step__n{color:#5a4220}
+@media (max-width:900px){.process.pm-pin .step p{font-size:calc((1.35rem) * var(--lk,1));line-height:1.3}}
+/* Hebrew running text: Amatic in its bold cut reads far better than the hairline regular */
+html[dir=rtl]:not(.a11y-readable) :is(p,li,dd,dt,.val,.eyebrow,.pcard__tag,.pcard__meta span,.loc,.chip,.cmp__tag,.swipe-hint,.toTop,.foot span,.foot a,.tst__text,.tst__who,.contact__lead){font-weight:700}
 </style>
 </head>
 <body>
@@ -666,7 +677,7 @@ html[dir=ltr]:not(.a11y-readable) :is(h1,h2,h3,.statement p.big,.sig){-webkit-te
       <div class="rule"></div>
       <span class="eyebrow fade-in"></span>
       <h1 class="split-hero"><span class="ln"><span>Architecture</span></span><span class="ln"><span>& Interior <em>Design</em></span></span></h1>
-      <p class="hero__sub fade-in">Jud Studio</p>
+      <p class="hero__sub fade-in">JUD Studio</p>
       <div class="hero__ctas fade-in">
         <a class="btn btn--brass magnetic" href="#projects" data-cursor>View projects →</a>
         <a class="btn magnetic" data-wa href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
@@ -750,7 +761,7 @@ html[dir=ltr]:not(.a11y-readable) :is(h1,h2,h3,.statement p.big,.sig){-webkit-te
     <div class="about__img clip"><img src="img/yehuda.webp" srcset="img/yehuda-s.webp 760w, img/yehuda.webp 1400w" sizes="(max-width:900px) 92vw, 520px" alt="Jud Abitbol at the Ninio Academy project" decoding="async" class="par"></div>
     <div class="about__txt">
       <span class="eyebrow">About the studio</span>
-      <h2 class="split"><span class="ln"><span>Jud Studio</span></span></h2>
+      <h2 class="split"><span class="ln"><span>JUD Studio</span></span></h2>
       <p>is an architecture and interior design practice specialising in private and commercial projects, combining creative thinking, precise planning and a drive to create one-of-a-kind spaces that look like no other.</p>
       <p>The studio is led by Jud Abitbol, who holds two qualifications from Shenkar: a bachelor’s degree in building, interior and environmental design, and a diploma in architectural technology. Alongside his work at the studio, Jud lectures at leading institutions in the field.</p>
       <blockquote class="about__quote">“From the boldest fantasy to the smallest detail – that’s how we think. We love unusual requests, enjoy the challenge and aren’t afraid to think differently.”</blockquote>
