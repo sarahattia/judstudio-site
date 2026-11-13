@@ -603,7 +603,14 @@ a.cbox.is-on .cbox__arrow{transform:translate(-6px,-6px)}
 .cgrid .cbox--ring.is-on{color:var(--stone-hi);border-color:transparent}
 .cbox--ring.is-on::after{opacity:1;animation:ringspin 2.4s linear infinite}
 html.a11y-still .cbox--ring.is-on::after{animation:none}
-a.cbox.is-on{transform:scale(1.02);transition:color .5s var(--ease),border-color .5s,transform .5s var(--ease)}
+
+/* FR/EN readability: Italiana stays for headings (slightly thickened), running text uses Fredoka */
+@font-face{font-family:"Fredoka EN";src:url(fonts/fredoka-latin-wdth.woff2) format("woff2-variations"),url(fonts/fredoka-latin-wdth.woff2) format("woff2");font-weight:300 700;font-stretch:75% 125%;font-display:swap}
+html[dir=ltr]:not(.a11y-readable){--f:"Fredoka EN","Rubik",Arial,sans-serif}
+html[dir=ltr]:not(.a11y-readable) body{font-weight:400;font-stretch:100%;letter-spacing:.005em}
+html[dir=ltr]:not(.a11y-readable) :is(.nav a,.btn,.hero__sub,.arch__cap,.menu a,.menu .btn,.langs a,.marquee__track span,.eyebrow,.cbox h3,.cbox .val,.pcard__tag,.pcard__meta span,.svc__row p,.step p,.process__head p,.projects__head p,.about__txt p,.ba__text p,.contact__lead,.tst__text,.tst__who,.ov__hero p,.ov__facts dt,.ov__facts dd,.loc,.foot,.foot a,.toTop,.swipe-hint,.chip,.cmp__tag){font-family:"Fredoka EN","Rubik",Arial,sans-serif!important;font-weight:400!important;font-stretch:100%!important;word-spacing:normal!important}
+html[dir=ltr]:not(.a11y-readable) :is(.eyebrow,.cbox h3,.ov__facts dt){font-weight:500!important}
+html[dir=ltr]:not(.a11y-readable) :is(h1,h2,h3,.statement p.big,.sig){-webkit-text-stroke:.35px currentColor}
 </style>
 </head>
 <body>
