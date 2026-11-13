@@ -156,15 +156,15 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .hprogress{position:absolute;bottom:34px;inset-inline:var(--gut);height:1px;background:var(--line);overflow:hidden}
 .hprogress i{position:absolute;inset:0;background:var(--brass);transform:scaleX(0);transform-origin:right}
 @media (max-width:900px){
-  .projects{min-height:100svh;display:flex;flex-direction:column}
-  .projects__head{padding-top:calc(78px + env(safe-area-inset-top,0px));padding-bottom:14px}
-  .hscroll{flex:1;display:flex;align-items:flex-start;overflow:hidden}
-  .htrack{width:max-content;flex-direction:row;gap:18px;padding-top:0;padding-bottom:0}
-  .pcard{width:min(74vw,calc((100svh - var(--ph,260px) - 150px) * .75));max-width:360px;gap:8px}
-  .pcard:nth-child(even){margin-top:24px}
-  .pcard__img{aspect-ratio:3/4}
-  .hend{width:66vw;max-width:320px}
-  .hprogress{display:block;bottom:18px}
+  .hscroll{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y}
+  .hscroll::-webkit-scrollbar{display:none}
+  .htrack{width:max-content;flex-direction:row;gap:16px;padding-top:4px;padding-bottom:28px}
+  .pcard{width:78vw;max-width:360px;scroll-snap-align:center}
+  .pcard:nth-child(even){margin-top:0}
+  .pcard__img{aspect-ratio:3/3.7}
+  .hend{width:70vw;max-width:320px;scroll-snap-align:center}
+  .hprogress{display:block;position:relative;bottom:auto;inset-inline:auto;margin:0 var(--gut) 40px}
+  .swipe-hint{display:block}
 }
 
 /* process (light chapter) */
@@ -684,6 +684,7 @@ html[dir=ltr]{--lk:.7}
       <div style="display:grid;gap:12px"><h2 class="split"><span class="ln"><span>Projets</span></span></h2></div>
       <p>Une sélection de projets du studio, pour des particuliers et des professionnels.</p>
     </div>
+    <p class="swipe-hint" aria-hidden="true">Faites glisser pour voir tous les projets ⟷</p>
     <div class="hscroll" id="hscroll">
       <div class="htrack" id="htrack"></div>
     </div>
@@ -1172,7 +1173,7 @@ loader.style.animation='none';
 
 // horizontal projects (desktop)
 const mm=gsap.matchMedia();
-mm.add('all',()=>{
+mm.add('(min-width: 901px)',()=>{
   const dist=()=>track.scrollWidth-innerWidth;
   const tw=gsap.to(track,{x:()=>RTL?dist():-dist(),ease:'none',scrollTrigger:{trigger:'#projects',start:'top top',end:()=>'+='+dist(),pin:true,scrub:1,invalidateOnRefresh:true,anticipatePin:1,
     onUpdate:s=>gsap.set('#hprog',{scaleX:s.progress})}});
