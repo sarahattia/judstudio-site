@@ -259,6 +259,10 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
   .svc__row p{grid-column:1 / 3;grid-row:2;max-width:none}
   .svc__thumb{display:block;grid-column:3;grid-row:1 / 3;align-self:center;width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:2px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.35)}
   .svc__thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .svc.js-one .svc__thumb{opacity:0;transform:scale(.4);transition:opacity .5s ease,transform .7s cubic-bezier(.2,1,.3,1)}
+  .svc.js-one li.svc-on .svc__thumb{opacity:1;transform:scale(1.15)}
+  .svc.js-one li.svc-on .svc__row{padding-inline-start:clamp(10px,2vw,30px)}
+  .svc.js-one li.svc-on .svc__row::before{transform:none}
 }
 .svc-preview{position:fixed;top:0;left:0;z-index:60;width:260px;aspect-ratio:1;border-radius:50%;border:2px solid var(--gold);box-shadow:0 20px 50px rgba(0,0,0,.35);overflow:hidden;pointer-events:none;opacity:0;transform:scale(.6);transition:opacity .35s,transform .5s var(--ease);display:none}
 .svc-preview.on{opacity:1;transform:scale(1)}
@@ -955,6 +959,17 @@ const prev=document.getElementById('svcPrev');
 prev.innerHTML=SVC.map(s=>`<img src="img/${s[2]}.webp" alt="" style="opacity:0">`).join('');
 document.getElementById('svc').innerHTML=SVC.map((s,i)=>`<li data-i="${i}"><div class="svc__row"><b>${num(i)}</b><h3>${s[0]}</h3><p>${s[1]}</p><span class="svc__thumb" aria-hidden="true"><img src="img/${s[2]}-s.webp" alt="" decoding="async"></span></div></li>`).join('');
 
+
+/* background preloading: once the page is idle, warm the browser cache with the images seen next */
+(function(){const urls=[];const add=u=>{if(u&&!urls.includes(u))urls.push(u)};
+  document.querySelectorAll('.pcard img,#arch img,.cmp img,.about__img img,#pmedia img,.svc__thumb img').forEach(i=>add(i.currentSrc||i.src));
+  SVC.forEach(x=>add('img/'+x[2]+'.webp'));
+  Object.values(META).forEach(list=>list.forEach(m=>add('img/'+m.f+'-s.webp')));
+  let k=0;const conn=navigator.connection;if(conn&&(conn.saveData||/2g/.test(conn.effectiveType||'')))return;
+  const next=()=>{if(k>=urls.length)return;const batch=urls.slice(k,k+4);k+=4;let left=batch.length;batch.forEach(u=>{const im=new Image();im.decoding='async';im.onload=im.onerror=()=>{if(--left===0)idle(next)};im.src=u})};
+  const idle=f=>('requestIdleCallback' in window)?requestIdleCallback(f,{timeout:1500}):setTimeout(f,200);
+  addEventListener('load',()=>setTimeout(()=>idle(next),2500));
+})();
 /* helpers */
 if(reduced)document.documentElement.classList.add('reduced');
 const toast=document.getElementById('toast');let tt;
@@ -1066,7 +1081,7 @@ function fillOv(i){
   document.getElementById('ovLoc').textContent=p.loc+' · '+p.tag;
   document.getElementById('ovDesc').textContent=p.d;
   document.getElementById('ovFacts').innerHTML=p.f.map(f=>`<div><dt>${f[0]}</dt><dd>${f[1]}</dd></div>`).join('');
-  gal.innerHTML=META[p.k].map((m,j)=>`<button data-j="${j}" aria-label="Agrandir l’image ${j+1}"><img src="img/${m.f}.webp" width="${m.w}" height="${m.h}" alt="${p.t} ${p.loc}, image ${j+1}" decoding="async">${m.process?'<span class="chip">En cours de chantier</span>':''}</button>`).join('');
+  gal.innerHTML=META[p.k].map((m,j)=>`<button data-j="${j}" aria-label="Agrandir l’image ${j+1}"><img src="img/${m.f}-s.webp" srcset="img/${m.f}-s.webp 760w, img/${m.f}.webp 1600w" sizes="(max-width:900px) 92vw, 33vw" width="${m.w}" height="${m.h}" alt="${p.t} ${p.loc}, image ${j+1}" decoding="async">${m.process?'<span class="chip">En cours de chantier</span>':''}</button>`).join('');
   const n=PROJECTS[(i+1)%PROJECTS.length];
   document.getElementById('ovNext').textContent=n.t+' · '+n.loc+' →';
   ov.scrollTop=0;
@@ -1178,7 +1193,7 @@ mm.add('(max-width: 900px)',()=>{
   proc.classList.add('pm-pin');dots.innerHTML=steps.map(()=>'<i></i>').join('');const di=[...dots.children];
   let cur=-1;const show=i=>{if(i===cur)return;cur=i;di.forEach((d,k)=>d.classList.toggle('on',k===i));steps.forEach((st,k)=>{st.classList.toggle('is-active',k===i);const v=st.querySelector('video');if(v){k===i?v.play().catch(()=>{}):v.pause()}})};
   gsap.set(steps.slice(1),{yPercent:60,opacity:0});
-  const tl=gsap.timeline({scrollTrigger:{trigger:proc,start:'top top',end:()=>'+='+(n-1)*innerHeight*.85,pin:true,scrub:.6,anticipatePin:1,invalidateOnRefresh:true,onUpdate:s=>show(Math.min(n-1,Math.floor(s.progress*(n-1)+.5)))}});
+  const tl=gsap.timeline({scrollTrigger:{trigger:proc,start:'top top',end:()=>'+='+(n-1)*innerHeight*1.7,pin:true,scrub:1.2,anticipatePin:1,invalidateOnRefresh:true,onUpdate:s=>show(Math.min(n-1,Math.floor(s.progress*(n-1)+.5)))}});
   // each segment = 1 unit: hold .45, then cross-fade .55 (keeps progress and visible step in sync)
   for(let i=0;i<n-1;i++){
     const t0=i+.45;
@@ -1189,17 +1204,17 @@ mm.add('(max-width: 900px)',()=>{
   tl.to({},{duration:.01},n-1);
   show(0);
   // services: each photo grows in as its row reaches the middle, then fades as the next arrives
-  document.querySelectorAll('.svc li').forEach(li=>{const t=li.querySelector('.svc__thumb');if(!t)return;
-    gsap.timeline({scrollTrigger:{trigger:li,start:'top 80%',end:'bottom 20%',scrub:.4}})
-      .fromTo(t,{scale:.35,opacity:0},{scale:1.12,opacity:1,ease:'power2.out',duration:1})
-      .to(t,{scale:.35,opacity:0,ease:'power2.in',duration:1})});
+  // only one photo at a time: the row whose top has passed the middle of the screen
+  document.getElementById('svc').classList.add('js-one');const rows=[...document.querySelectorAll('.svc li')];let svcOn=-1;
+  const svcSet=i=>{if(i===svcOn)return;svcOn=i;rows.forEach((r,k)=>r.classList.toggle('svc-on',k===i))};
+  ScrollTrigger.create({trigger:'.svc',start:'top bottom',end:'bottom top',onUpdate:()=>{const mid=innerHeight/2;let k=-1;rows.forEach((r,i)=>{const b=r.getBoundingClientRect();if(b.top<=mid&&b.bottom>mid)k=i});svcSet(k)},onLeave:()=>svcSet(-1),onLeaveBack:()=>svcSet(-1)});
   // about: text rises over the photo, photo fades away from bottom to top
   const ab=document.querySelector('.about'),abImg=ab.querySelector('.about__img');ab.classList.add('ab-fx');
   gsap.fromTo(abImg,{'--m':-40},{'--m':100,ease:'none',scrollTrigger:{trigger:'.about__txt',start:'top 85%',end:'top 0%',scrub:true}});
   return()=>{ab.classList.remove('ab-fx');gsap.set(abImg,{clearProps:'--m'});proc.classList.remove('pm-pin');gsap.set(steps,{clearProps:'all'});dots.innerHTML=''};
 });
 // services: on touch screens the row in the middle of the screen gets the hover effect
-if(!matchMedia('(pointer:fine)').matches)document.querySelectorAll('.svc li').forEach(li=>ScrollTrigger.create({trigger:li,start:'top 62%',end:'bottom 38%',toggleClass:'is-active'}));
+if(!matchMedia('(pointer:fine)').matches&&innerWidth>900)document.querySelectorAll('.svc li').forEach(li=>ScrollTrigger.create({trigger:li,start:'top 50%',end:'bottom 50%',toggleClass:'is-active'}));
 // headings
 gsap.utils.toArray('.split').forEach(h=>{
   gsap.from(h.querySelectorAll('.ln > span'),{yPercent:115,duration:1.3,stagger:.1,ease:'expo.out',scrollTrigger:{trigger:h,start:'top 88%'}});
