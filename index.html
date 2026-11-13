@@ -592,6 +592,18 @@ html[dir=ltr]{--lk:.7}
 [dir=ltr].reduced .statement p.big,[dir=ltr].a11y-still .statement p.big{background-position:0% 0}
 .foot__br{display:none}
 @media (max-width:900px){.foot__br{display:inline}.foot__dot{display:none}.foot__id{line-height:1.5}}
+
+/* mobile: contact card in the middle of the screen (or tapped) gets the hover look */
+a.cbox.is-on{color:var(--olive-deep);border-color:var(--stone)}
+a.cbox.is-on::before{transform:none}
+a.cbox--ig.is-on{color:var(--stone-hi)}
+.cbox--fb.is-on{color:#fff;border-color:#1877F2}
+a.cbox.is-on .cbox__arrow{transform:translate(-6px,-6px)}
+[dir=ltr] a.cbox.is-on .cbox__arrow{transform:translate(6px,-6px)}
+.cgrid .cbox--ring.is-on{color:var(--stone-hi);border-color:transparent}
+.cbox--ring.is-on::after{opacity:1;animation:ringspin 2.4s linear infinite}
+html.a11y-still .cbox--ring.is-on::after{animation:none}
+a.cbox.is-on{transform:scale(1.02);transition:color .5s var(--ease),border-color .5s,transform .5s var(--ease)}
 </style>
 </head>
 <body>
@@ -1209,6 +1221,11 @@ mm.add('(max-width: 900px)',()=>{
   document.getElementById('svc').classList.add('js-one');const rows=[...document.querySelectorAll('.svc li')];let svcOn=-1;
   const svcSet=i=>{if(i===svcOn)return;svcOn=i;rows.forEach((r,k)=>r.classList.toggle('svc-on',k===i))};
   ScrollTrigger.create({trigger:'.svc',start:'top bottom',end:'bottom top',onUpdate:()=>{const mid=innerHeight/2;let k=-1;rows.forEach((r,i)=>{const b=r.getBoundingClientRect();if(b.top<=mid&&b.bottom>mid)k=i});svcSet(k)},onLeave:()=>svcSet(-1),onLeaveBack:()=>svcSet(-1)});
+  // contact: the card crossing the middle of the screen lights up; a tap lights it up too
+  const cards=[...document.querySelectorAll('.cgrid .cbox')];let cOn=-1;
+  const cSet=i=>{if(i===cOn)return;cOn=i;cards.forEach((c,k)=>c.classList.toggle('is-on',k===i))};
+  ScrollTrigger.create({trigger:'.cgrid',start:'top bottom',end:'bottom top',onUpdate:()=>{const mid=innerHeight/2;let k=-1,best=innerHeight*.3;cards.forEach((c,i)=>{const b=c.getBoundingClientRect(),d=Math.abs((b.top+b.bottom)/2-mid);if(d<best){best=d;k=i}});cSet(k)},onLeave:()=>cSet(-1),onLeaveBack:()=>cSet(-1)});
+  cards.forEach((c,i)=>c.addEventListener('pointerdown',()=>{cOn=-2;cSet(i)}));
   // about: text rises over the photo, photo fades away from bottom to top
   const ab=document.querySelector('.about'),abImg=ab.querySelector('.about__img');ab.classList.add('ab-fx');
   gsap.fromTo(abImg,{'--m':-40},{'--m':100,ease:'none',scrollTrigger:{trigger:'.about__txt',start:'top 85%',end:'top 0%',scrub:true}});
